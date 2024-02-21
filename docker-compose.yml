@@ -1,0 +1,28 @@
+version: '3.9'
+
+volumes:
+  db_my:
+
+services:
+  db_my:
+    container_name: db_my
+    restart: always
+    volumes:
+      - db_my:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_DB=db_my
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=admin
+    image: postgres:12.17-bullseye
+  app:
+    restart: always
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db_my
+    environment:
+      SPRING_DATASOURCE_URL: 'jdbc:postgresql://db_my:5432/db_my'
+      JAVA_OPTS: '-Xmx512m'
